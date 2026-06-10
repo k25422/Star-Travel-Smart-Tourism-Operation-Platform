@@ -4,9 +4,9 @@
 
 ## 技术栈
 
-后端：Spring Boot 2.7、Spring Security、JWT 双 Token、Spring Data JPA、MySQL、Redis、Kafka
+后端：Spring Boot 2.7、Spring Security、JWT 双 Token、Spring Security、MySQL
 
-并发与一致性增强：数据库悲观锁、JPA 乐观锁版本号、幂等 requestId、Transactional Outbox
+并发与一致性增强：数据库悲观锁、JPA 乐观锁版本号、幂等 requestId、
 
 前端：Vue 3、Vite、TypeScript、Element Plus、Axios、ECharts、Three.js
 
