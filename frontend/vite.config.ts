@@ -3,6 +3,7 @@ import vue from "@vitejs/plugin-vue";
 
 export default defineConfig({
   plugins: [vue()],
+  base: '/Star-Travel-Smart-Tourism-Operation-Platform/',
   build: {
     chunkSizeWarningLimit: 1200,
     rollupOptions: {

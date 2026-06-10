@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from "vue-router";
+import {createRouter, createWebHashHistory} from "vue-router";
 import { useAuthStore } from "../stores/auth";
 
 const DashboardView = () => import("../views/DashboardView.vue");
@@ -10,7 +10,7 @@ const TravelerView = () => import("../views/TravelerView.vue");
 const UsersView = () => import("../views/UsersView.vue");
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHashHistory(),
   routes: [
     { path: "/login", component: LoginView },
     { path: "/travel", component: TravelerView, meta: { requiresAuth: true, roles: ["USER", "ADMIN"] } },
