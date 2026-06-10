@@ -1,0 +1,607 @@
+:root {
+  /* 全局颜色变量。以后想换主题色，优先改这里。 */
+  --ink: #14201f;
+  --muted: #5d6b67;
+  --line: #dce5df;
+  --surface: #fbfdfb;
+  --panel: #ffffff;
+  --forest: #11654f;
+  --coral: #e66b4f;
+  --aqua: #2b9eb3;
+  --gold: #e7aa30;
+  --night: #182426;
+  --shadow: 0 18px 45px rgba(22, 38, 34, 0.12);
+}
+
+/* 所有元素使用 border-box，尺寸计算更直观。 */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--ink);
+  background: var(--surface);
+  font-family: Inter, "Segoe UI", "Microsoft YaHei", Arial, sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* 左侧固定导航栏。 */
+.sidebar {
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: 10;
+  width: 248px;
+  padding: 28px 20px;
+  color: #f7fbf7;
+  background: linear-gradient(180deg, #172522, #24433a 54%, #2b5145);
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+/* 品牌区域。 */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-mark {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  color: var(--night);
+  background: var(--gold);
+  font-weight: 900;
+}
+
+.brand strong,
+.brand span {
+  display: block;
+}
+
+.brand span {
+  margin-top: 3px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 13px;
+}
+
+nav {
+  display: grid;
+  gap: 8px;
+}
+
+nav a {
+  padding: 12px 14px;
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+nav a:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.api-state {
+  margin-top: auto;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.76);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.api-state.online {
+  color: #ddf9ed;
+  border-color: rgba(122, 220, 176, 0.45);
+}
+
+.api-state.offline {
+  color: #ffe1d8;
+  border-color: rgba(230, 107, 79, 0.45);
+}
+
+/* 主内容右移，避免被固定导航栏盖住。 */
+.app-shell {
+  margin-left: 248px;
+}
+
+/* 首页首屏，包含背景、3D 地球和统计卡片。 */
+.hero {
+  position: relative;
+  min-height: 88vh;
+  padding: 72px min(6vw, 80px) 34px;
+  overflow: hidden;
+  color: #f8fff9;
+  background: radial-gradient(circle at 70% 25%, rgba(43, 158, 179, 0.34), transparent 30%),
+    linear-gradient(135deg, #182426 0%, #1c3b33 42%, #6f4c2e 100%);
+  display: grid;
+  grid-template-columns: minmax(280px, 0.95fr) minmax(320px, 1.05fr);
+  align-content: end;
+  gap: 28px;
+}
+
+/* Three.js 画布铺满首屏背景。 */
+#worldCanvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.95;
+}
+
+/* CSS 降级版 3D 地球。Three.js 成功时会隐藏它。 */
+.css-world {
+  position: absolute;
+  top: 11%;
+  right: 8%;
+  width: min(42vw, 520px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 30%, #86ddca, #257662 46%, #16322d 68%);
+  box-shadow: inset -38px -44px 70px rgba(0, 0, 0, 0.35), 0 36px 120px rgba(0, 0, 0, 0.25);
+  transform-style: preserve-3d;
+  animation: floatWorld 7s ease-in-out infinite;
+}
+
+/* Three.js 加载成功后，隐藏 CSS 地球，避免两个地球叠在一起。 */
+body.three-ready .css-world {
+  opacity: 0;
+}
+
+/* 地球上的轨道线。 */
+.ring {
+  position: absolute;
+  inset: 13%;
+  border: 1px solid rgba(255, 255, 255, 0.26);
+  border-radius: 50%;
+}
+
+.ring-a {
+  transform: rotateX(68deg) rotateZ(22deg);
+}
+
+.ring-b {
+  transform: rotateY(74deg) rotateZ(-10deg);
+}
+
+.ring-c {
+  transform: rotateX(78deg) rotateY(36deg);
+}
+
+/* 地球上的目的地标记点。 */
+.pin {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--gold);
+  box-shadow: 0 0 0 7px rgba(231, 170, 48, 0.2);
+}
+
+.pin-a {
+  top: 29%;
+  left: 33%;
+}
+
+.pin-b {
+  top: 57%;
+  left: 63%;
+  background: var(--coral);
+  box-shadow: 0 0 0 7px rgba(230, 107, 79, 0.22);
+}
+
+.pin-c {
+  top: 43%;
+  left: 48%;
+  background: #f5f8ef;
+}
+
+/* 首屏文字和统计卡片要盖在 canvas 上面。 */
+.hero-content,
+.stats-grid {
+  position: relative;
+  z-index: 2;
+}
+
+.hero-content {
+  max-width: 650px;
+  padding-bottom: 30px;
+}
+
+.eyebrow {
+  margin: 0 0 10px;
+  color: var(--coral);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.hero .eyebrow {
+  color: #ffd88f;
+}
+
+h1,
+h2,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  margin-bottom: 18px;
+  max-width: 760px;
+  font-size: clamp(42px, 7vw, 82px);
+  line-height: 0.96;
+  letter-spacing: 0;
+}
+
+h2 {
+  margin-bottom: 0;
+  font-size: 28px;
+  line-height: 1.15;
+  letter-spacing: 0;
+}
+
+.hero-copy {
+  max-width: 570px;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 17px;
+  line-height: 1.8;
+}
+
+.quick-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.primary-action,
+.ghost-action,
+button {
+  min-height: 44px;
+  border: 0;
+  border-radius: 8px;
+  padding: 12px 18px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.primary-action,
+button {
+  color: #182426;
+  background: var(--gold);
+}
+
+.ghost-action {
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+.stats-grid {
+  align-self: end;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(140px, 1fr));
+  gap: 12px;
+  padding-bottom: 30px;
+}
+
+.stat-card {
+  min-height: 112px;
+  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(14px);
+}
+
+.stat-card span {
+  display: block;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 13px;
+}
+
+.stat-card strong {
+  display: block;
+  margin-top: 10px;
+  font-size: 28px;
+}
+
+/* 页面分区通用样式。 */
+.section {
+  padding: 54px min(6vw, 80px);
+  border-bottom: 1px solid var(--line);
+}
+
+/* 分区标题行。 */
+.section-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 18px;
+  margin-bottom: 24px;
+}
+
+.section-heading.compact {
+  margin-bottom: 14px;
+}
+
+/* 输入框和下拉框统一样式。 */
+select,
+input {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: var(--ink);
+  background: #fff;
+  font: inherit;
+}
+
+.section-heading > select,
+.section-heading > input {
+  max-width: 320px;
+}
+
+/* 目的地卡片网格。 */
+.destination-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+}
+
+/* 目的地单张卡片。 */
+.destination-card {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+.destination-image {
+  min-height: 170px;
+  background-color: #d8eadf;
+  background-size: cover;
+  background-position: center;
+}
+
+.destination-card article {
+  padding: 18px;
+}
+
+.destination-card h3 {
+  margin: 0 0 8px;
+  font-size: 18px;
+  line-height: 1.25;
+}
+
+.destination-card p {
+  color: var(--muted);
+  line-height: 1.65;
+  font-size: 14px;
+}
+
+.meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.tag {
+  padding: 6px 9px;
+  border-radius: 8px;
+  background: #edf5ef;
+  color: var(--forest);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+/* 路线表格外层，负责横向滚动和边框。 */
+.table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: var(--shadow);
+}
+
+table {
+  width: 100%;
+  min-width: 760px;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 15px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+}
+
+th {
+  color: var(--muted);
+  background: #f3f8f5;
+  font-size: 13px;
+}
+
+td strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+td span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* 预订模块左右两列布局。 */
+.booking-layout {
+  display: grid;
+  grid-template-columns: minmax(280px, 420px) 1fr;
+  gap: 32px;
+  align-items: start;
+}
+
+/* 预订表单样式。 */
+form {
+  display: grid;
+  gap: 14px;
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: var(--shadow);
+}
+
+label {
+  display: grid;
+  gap: 7px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.form-message {
+  min-height: 22px;
+  margin: 0;
+  color: var(--forest);
+  font-weight: 800;
+}
+
+.form-message.error {
+  color: var(--coral);
+}
+
+/* 最近预订列表。 */
+.booking-list {
+  display: grid;
+  gap: 12px;
+}
+
+.booking-item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.booking-item p {
+  margin: 5px 0 0;
+  color: var(--muted);
+}
+
+/* CSS 地球上下漂浮动画。 */
+@keyframes floatWorld {
+  0%,
+  100% {
+    transform: translateY(0) rotateZ(-8deg);
+  }
+  50% {
+    transform: translateY(-18px) rotateZ(-3deg);
+  }
+}
+
+/* 平板尺寸适配。 */
+@media (max-width: 1040px) {
+  .sidebar {
+    position: static;
+    width: auto;
+    min-height: auto;
+    padding: 18px;
+  }
+
+  .sidebar nav {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .api-state {
+    display: none;
+  }
+
+  .app-shell {
+    margin-left: 0;
+  }
+
+  .hero {
+    min-height: 780px;
+    grid-template-columns: 1fr;
+    padding-top: 58px;
+  }
+
+  .css-world {
+    width: min(70vw, 420px);
+    top: 8%;
+    right: -6%;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(4, minmax(120px, 1fr));
+  }
+
+  .destination-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .booking-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 手机尺寸适配。 */
+@media (max-width: 680px) {
+  .sidebar nav {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .hero {
+    min-height: 860px;
+    padding: 44px 20px 28px;
+  }
+
+  h1 {
+    font-size: 43px;
+  }
+
+  .stats-grid,
+  .destination-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .section {
+    padding: 42px 20px;
+  }
+
+  .section-heading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .section-heading > select,
+  .section-heading > input {
+    max-width: none;
+  }
+
+  .booking-item {
+    grid-template-columns: 1fr;
+  }
+}
